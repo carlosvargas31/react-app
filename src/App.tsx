@@ -1,9 +1,9 @@
 import { useSpells } from './hooks/useSpells';
-import { SpellsHeader } from './components/SpellsHeader';
-import { SpellFilters } from './components/SpellFilters';
-import { SpellGrid } from './components/SpellGrid';
-import { SpellStats } from './components/SpellStats';
-import { ScrollToTop } from './components/ScrollToTop';
+import { SpellsHeader } from './components/header/SpellsHeader';
+import { SpellFilters } from './components/filters/SpellFilters';
+import { SpellGrid } from './components/grid/SpellGrid';
+import { SpellStats } from './components/stats/SpellStats';
+import { ScrollToTop } from './components/scroll/ScrollToTop';
 import './App.css';
 
 function App() {

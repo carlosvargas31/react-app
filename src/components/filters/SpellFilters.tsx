@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ClassType, FilterState } from '../types/spell';
+import type { ClassType, FilterState } from '../../types/spell';
 import './SpellFilters.css';
 
 interface SpellFiltersProps {

@@ -1,6 +1,6 @@
 import React from 'react';
-import type { Spell } from '../types/spell';
-import { SpellCard } from './SpellCard';
+import type { Spell } from '../../types/spell';
+import { SpellCard } from '../card/SpellCard';
 import './SpellGrid.css';
 
 interface SpellGridProps {

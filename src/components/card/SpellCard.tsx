@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Spell } from '../types/spell';
+import type { Spell } from '../../types/spell';
 import './SpellCard.css';
 
 interface SpellCardProps {
@@ -10,22 +10,15 @@ export const SpellCard: React.FC<SpellCardProps> = ({ spell }) => {
   const getSpellImage = (spellId: string) => {
     try {
       // En Vite, las imágenes en src/assets necesitan ser importadas o usar la URL completa
-      return new URL(`../assets/spells/${spellId}.png`, import.meta.url).href;
+      return new URL(`../../assets/spells/${spellId}.png`, import.meta.url).href;
     } catch {
       // fallback image
-      return new URL('../assets/spells/magic-missile.png', import.meta.url).href;
+      return new URL('../../assets/spells/magic-missile.png', import.meta.url).href;
     }
   };
 
   const getLevelText = (level: number) => {
     return level === 0 ? 'Truco' : `Nivel ${level}`;
-  };
-
-  const getDamageText = () => {
-    if (!spell.damage || !Array.isArray(spell.damage) || spell.damage.length === 0) {
-      return 'Sin daño';
-    }
-    return spell.damage.map(d => `${d.dice} ${d.damageType}`).join(', ');
   };
 
   return (
@@ -72,11 +65,6 @@ export const SpellCard: React.FC<SpellCardProps> = ({ spell }) => {
               <span className="detail-value">{spell.type}</span>
             </div>
           )}
-          
-          <div className="spell-detail">
-            <span className="detail-label">Daño:</span>
-            <span className="detail-value damage-text">{getDamageText()}</span>
-          </div>
         </div>
         
         <div className="spell-footer">

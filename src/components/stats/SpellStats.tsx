@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Spell } from '../types/spell';
+import type { Spell } from '../../types/spell';
 import './SpellStats.css';
 
 interface SpellStatsProps {
