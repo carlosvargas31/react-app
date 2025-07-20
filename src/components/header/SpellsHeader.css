@@ -30,6 +30,9 @@
 
 .header-text {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .header-title {
@@ -44,6 +47,7 @@
   align-items: center;
   gap: 1rem;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 100%;
 }
 
 .title-icon {
@@ -67,6 +71,8 @@
   opacity: 0.9;
   font-weight: 300;
   line-height: 1.6;
+  padding-left: 4rem;
+  width: 100%;
 }
 
 .header-decoration {
@@ -124,6 +130,10 @@
     gap: 2rem;
   }
   
+  .header-text {
+    align-items: center;
+  }
+  
   .header-title {
     font-size: 2.5rem;
     justify-content: center;
@@ -135,6 +145,8 @@
   
   .header-subtitle {
     font-size: 1rem;
+    padding-left: 0; /* Remover padding en móvil */
+    text-align: center;
   }
   
   .magic-circle {
@@ -160,9 +172,11 @@
     font-size: 2rem;
     flex-direction: column;
     gap: 0.5rem;
+    align-items: center;
   }
   
   .header-subtitle {
     font-size: 0.9rem;
+    padding-left: 0;
   }
 }
