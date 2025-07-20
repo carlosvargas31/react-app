@@ -29,6 +29,4 @@ export interface FilterState {
   searchTerm: string;
   selectedClass: ClassType | 'all';
   selectedLevel: number | 'all';
-  selectedDamageType: string | 'all';
-  sortBy: SortOption;
 }
