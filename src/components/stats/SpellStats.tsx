@@ -9,8 +9,6 @@ interface SpellStatsProps {
 export const SpellStats: React.FC<SpellStatsProps> = ({ spells }) => {
   const stats = React.useMemo(() => {
     const levelCount: Record<number, number> = {};
-    const damageTypeCount: Record<string, number> = {};
-    let totalWithDamage = 0;
     let totalUpcast = 0;
 
     spells.forEach(spell => {
@@ -19,26 +17,12 @@ export const SpellStats: React.FC<SpellStatsProps> = ({ spells }) => {
       
       // Count upcast spells
       if (spell.upcast) totalUpcast++;
-      
-      // Count damage types
-      if (spell.damage && spell.damage.length > 0) {
-        totalWithDamage++;
-        spell.damage.forEach(damage => {
-          damageTypeCount[damage.damageType] = (damageTypeCount[damage.damageType] || 0) + 1;
-        });
-      }
     });
-
-    const topDamageType = Object.entries(damageTypeCount)
-      .sort(([,a], [,b]) => b - a)[0];
 
     return {
       total: spells.length,
       byLevel: levelCount,
-      totalWithDamage,
-      totalUpcast,
-      topDamageType: topDamageType ? topDamageType[0] : 'N/A',
-      topDamageTypeCount: topDamageType ? topDamageType[1] : 0
+      totalUpcast
     };
   }, [spells]);
 
@@ -57,21 +41,9 @@ export const SpellStats: React.FC<SpellStatsProps> = ({ spells }) => {
         </div>
         
         <div className="stat-card">
-          <div className="stat-value">{stats.totalWithDamage}</div>
-          <div className="stat-label">Con Daño</div>
-          <div className="stat-percentage">{getPercentage(stats.totalWithDamage)}%</div>
-        </div>
-        
-        <div className="stat-card">
           <div className="stat-value">{stats.totalUpcast}</div>
           <div className="stat-label">Upcast</div>
           <div className="stat-percentage">{getPercentage(stats.totalUpcast)}%</div>
-        </div>
-        
-        <div className="stat-card">
-          <div className="stat-value">{stats.topDamageType}</div>
-          <div className="stat-label">Tipo Más Común</div>
-          <div className="stat-percentage">{stats.topDamageTypeCount} hechizos</div>
         </div>
       </div>
       
