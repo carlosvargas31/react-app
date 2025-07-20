@@ -3,7 +3,6 @@ import { SpellsHeader } from './components/header/SpellsHeader';
 import { SpellFilters } from './components/filters/SpellFilters';
 import { SpellGrid } from './components/grid/SpellGrid';
 import { SpellStats } from './components/stats/SpellStats';
-import { ScrollToTop } from './components/scroll/ScrollToTop';
 import './App.css';
 
 function App() {
@@ -38,7 +37,6 @@ function App() {
         <SpellGrid spells={spells} />
       </main>
       
-      <ScrollToTop />
     </div>
   );
 }
