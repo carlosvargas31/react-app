@@ -1,16 +1,79 @@
-import { useState, useMemo } from 'react';
-import type { Spell, SpellsByClass, FilterState } from '../types/spell';
-import spellsData from '../data/spells.json';
-import spellsByClassData from '../data/spells-by-class.json';
+import { useState, useMemo, useEffect } from 'react';
+import type { Spell, FilterState } from '../types/spell';
 
 export const useSpells = () => {
-  const [spells] = useState<Spell[]>(spellsData as Spell[]);
-  const [spellsByClass] = useState<SpellsByClass>(spellsByClassData as SpellsByClass);
+  const [spells, setSpells] = useState<Spell[]>([]);
+  const [spellsByClass, setSpellsByClass] = useState<Record<string, string[]>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: '',
     selectedClass: 'all',
     selectedLevel: 'all'
   });
+
+  useEffect(() => {
+    const fetchAllSpells = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Get all classes first
+        const classesResponse = await fetch('https://inesdi2025-resources-p2.fly.dev/v1/classes');
+        if (!classesResponse.ok) {
+          throw new Error('Error al obtener las clases');
+        }
+        const classes: string[] = await classesResponse.json();
+        
+        // Get spells for each class and store the mapping
+        const allSpellIds = new Set<string>();
+        const classSpellsMap: Record<string, string[]> = {};
+        
+        for (const className of classes) {
+          try {
+            const spellsResponse = await fetch(`https://inesdi2025-resources-p2.fly.dev/v1/classes/${className}/spells`);
+            if (spellsResponse.ok) {
+              const classSpells: string[] = await spellsResponse.json();
+              classSpellsMap[className] = classSpells;
+              classSpells.forEach(spellId => allSpellIds.add(spellId));
+            }
+          } catch (error) {
+            console.error(`Error fetching spells for class ${className}:`, error);
+          }
+        }
+        
+        setSpellsByClass(classSpellsMap);
+        
+        // Get detailed information for each spell
+        const spellsData: Spell[] = [];
+        for (const spellId of allSpellIds) {
+          try {
+            const spellResponse = await fetch(`https://inesdi2025-resources-p2.fly.dev/v1/spells/${spellId}`);
+            if (spellResponse.ok) {
+              const spellData = await spellResponse.json();
+              // Update icon to use API endpoint
+              const spell: Spell = {
+                ...spellData,
+                icon: `https://inesdi2025-resources-p2.fly.dev/v1/assets/spells/${spellId}`
+              };
+              spellsData.push(spell);
+            }
+          } catch (error) {
+            console.error(`Error fetching spell ${spellId}:`, error);
+          }
+        }
+        
+        setSpells(spellsData);
+      } catch (error) {
+        console.error('Error fetching spells:', error);
+        setError(error instanceof Error ? error.message : 'Error desconocido');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllSpells();
+  }, []);
 
   // Get unique damage types
   const damageTypes = useMemo(() => {
@@ -76,6 +139,8 @@ export const useSpells = () => {
     damageTypes,
     levels,
     totalSpells: spells.length,
-    filteredCount: filteredSpells.length
+    filteredCount: filteredSpells.length,
+    isLoading,
+    error
   };
 };

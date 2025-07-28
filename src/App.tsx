@@ -14,8 +14,37 @@ function App() {
     damageTypes,
     levels,
     totalSpells,
-    filteredCount
+    filteredCount,
+    isLoading,
+    error
   } = useSpells();
+
+  if (isLoading) {
+    return (
+      <div className="app">
+        <SpellsHeader />
+        <main className="main-content">
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <h2>Cargando hechizos...</h2>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="app">
+        <SpellsHeader />
+        <main className="main-content">
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <h2>Error al cargar hechizos</h2>
+            <p>{error}</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
