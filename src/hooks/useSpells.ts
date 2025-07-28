@@ -9,9 +9,7 @@ export const useSpells = () => {
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: '',
     selectedClass: 'all',
-    selectedLevel: 'all',
-    selectedDamageType: 'all',
-    sortBy: 'name'
+    selectedLevel: 'all'
   });
 
   // Get unique damage types
@@ -55,36 +53,8 @@ export const useSpells = () => {
       filtered = filtered.filter(spell => spell.level === filters.selectedLevel);
     }
 
-    // Filter by damage type
-    if (filters.selectedDamageType !== 'all') {
-      filtered = filtered.filter(spell =>
-        spell.damage && Array.isArray(spell.damage) && 
-        spell.damage.some(damage => damage.damageType === filters.selectedDamageType)
-      );
-    }
-
     return filtered;
   }, [spells, spellsByClass, filters]);
-
-  // Sort filtered spells
-  const sortedSpells = useMemo(() => {
-    const sorted = [...filteredSpells];
-    
-    switch (filters.sortBy) {
-      case 'name':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name));
-      case 'level':
-        return sorted.sort((a, b) => a.level - b.level);
-      case 'damage':
-        return sorted.sort((a, b) => {
-          const aDamageCount = (a.damage && a.damage.length) || 0;
-          const bDamageCount = (b.damage && b.damage.length) || 0;
-          return bDamageCount - aDamageCount;
-        });
-      default:
-        return sorted;
-    }
-  }, [filteredSpells, filters.sortBy]);
 
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -94,14 +64,12 @@ export const useSpells = () => {
     setFilters({
       searchTerm: '',
       selectedClass: 'all',
-      selectedLevel: 'all',
-      selectedDamageType: 'all',
-      sortBy: 'name'
+      selectedLevel: 'all'
     });
   };
 
   return {
-    spells: sortedSpells,
+    spells: filteredSpells,
     filters,
     updateFilter,
     resetFilters,
