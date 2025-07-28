@@ -43,6 +43,7 @@ export const useSpells = () => {
         for (const spellId of allSpellIds) {
           try {
             const spell = await apiService.getSpell(spellId);
+            spell.icon = apiService.getSpellImageUrl(spellId);
             spellsData.push(spell);
           } catch (error) {
             console.error(`Error fetching spell ${spellId}:`, error);
