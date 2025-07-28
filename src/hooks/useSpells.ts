@@ -22,34 +22,46 @@ export const useSpells = () => {
         // Get all classes first
         const classes = await apiService.getClasses();
         
-        // Get spells for each class and store the mapping
+        // Get spells for each class in parallel and store the mapping
+        const classSpellsPromises = classes.map(async (className) => {
+          try {
+            const spells = await apiService.getSpellsByClass(className);
+            return { className, spells };
+          } catch (error) {
+            console.error(`Error fetching spells for class ${className}:`, error);
+            return { className, spells: [] };
+          }
+        });
+        
+        const classSpellsResults = await Promise.all(classSpellsPromises);
+        
+        // Process results
         const allSpellIds = new Set<string>();
         const classSpellsMap: Record<string, string[]> = {};
         
-        for (const className of classes) {
-          try {
-            const classSpells = await apiService.getSpellsByClass(className);
-            classSpellsMap[className] = classSpells;
-            classSpells.forEach(spellId => allSpellIds.add(spellId));
-          } catch (error) {
-            console.error(`Error fetching spells for class ${className}:`, error);
-          }
-        }
+        classSpellsResults.forEach(({ className, spells }) => {
+          classSpellsMap[className] = spells;
+          spells.forEach(spellId => allSpellIds.add(spellId));
+        });
         
         setSpellsByClass(classSpellsMap);
         
-        // Get detailed information for each spell
-        const spellsData: Spell[] = [];
-        for (const spellId of allSpellIds) {
+        // Get detailed information for each spell in parallel
+        const spellPromises = Array.from(allSpellIds).map(async (spellId) => {
           try {
             const spell = await apiService.getSpell(spellId);
             spell.icon = apiService.getSpellImageUrl(spellId);
-            spellsData.push(spell);
+            return spell;
           } catch (error) {
             console.error(`Error fetching spell ${spellId}:`, error);
+            return null;
           }
-        }
+        });
         
+        const spellsResults = await Promise.all(spellPromises);
+        
+        // Filter out null results and set spells
+        const spellsData = spellsResults.filter((spell): spell is Spell => spell !== null);
         setSpells(spellsData);
       } catch (error) {
         console.error('Error fetching spells:', error);
@@ -61,19 +73,6 @@ export const useSpells = () => {
 
     fetchAllSpells();
   }, []);
-
-  // Get unique damage types
-  const damageTypes = useMemo(() => {
-    const types = new Set<string>();
-    spells.forEach(spell => {
-      if (spell.damage && Array.isArray(spell.damage)) {
-        spell.damage.forEach(damage => {
-          types.add(damage.damageType);
-        });
-      }
-    });
-    return Array.from(types).sort();
-  }, [spells]);
 
   // Get unique levels
   const levels = useMemo(() => {
@@ -123,7 +122,6 @@ export const useSpells = () => {
     filters,
     updateFilter,
     resetFilters,
-    damageTypes,
     levels,
     totalSpells: spells.length,
     filteredCount: filteredSpells.length,

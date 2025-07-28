@@ -11,7 +11,6 @@ function App() {
     filters,
     updateFilter,
     resetFilters,
-    damageTypes,
     levels,
     totalSpells,
     filteredCount,
@@ -55,7 +54,6 @@ function App() {
           filters={filters}
           onUpdateFilter={updateFilter}
           onResetFilters={resetFilters}
-          damageTypes={damageTypes}
           levels={levels}
           totalSpells={totalSpells}
           filteredCount={filteredCount}

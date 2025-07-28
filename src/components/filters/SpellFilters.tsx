@@ -7,7 +7,6 @@ interface SpellFiltersProps {
   filters: FilterState;
   onUpdateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
   onResetFilters: () => void;
-  damageTypes: string[];
   levels: number[];
   totalSpells: number;
   filteredCount: number;
