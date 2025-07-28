@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import type { Spell, FilterState } from '../types/spell';
+import { apiService } from '../services/api';
 
 export const useSpells = () => {
   const [spells, setSpells] = useState<Spell[]>([]);
@@ -19,11 +20,7 @@ export const useSpells = () => {
         setError(null);
         
         // Get all classes first
-        const classesResponse = await fetch('https://inesdi2025-resources-p2.fly.dev/v1/classes');
-        if (!classesResponse.ok) {
-          throw new Error('Error al obtener las clases');
-        }
-        const classes: string[] = await classesResponse.json();
+        const classes = await apiService.getClasses();
         
         // Get spells for each class and store the mapping
         const allSpellIds = new Set<string>();
@@ -31,12 +28,9 @@ export const useSpells = () => {
         
         for (const className of classes) {
           try {
-            const spellsResponse = await fetch(`https://inesdi2025-resources-p2.fly.dev/v1/classes/${className}/spells`);
-            if (spellsResponse.ok) {
-              const classSpells: string[] = await spellsResponse.json();
-              classSpellsMap[className] = classSpells;
-              classSpells.forEach(spellId => allSpellIds.add(spellId));
-            }
+            const classSpells = await apiService.getSpellsByClass(className);
+            classSpellsMap[className] = classSpells;
+            classSpells.forEach(spellId => allSpellIds.add(spellId));
           } catch (error) {
             console.error(`Error fetching spells for class ${className}:`, error);
           }
@@ -48,16 +42,8 @@ export const useSpells = () => {
         const spellsData: Spell[] = [];
         for (const spellId of allSpellIds) {
           try {
-            const spellResponse = await fetch(`https://inesdi2025-resources-p2.fly.dev/v1/spells/${spellId}`);
-            if (spellResponse.ok) {
-              const spellData = await spellResponse.json();
-              // Update icon to use API endpoint
-              const spell: Spell = {
-                ...spellData,
-                icon: `https://inesdi2025-resources-p2.fly.dev/v1/assets/spells/${spellId}`
-              };
-              spellsData.push(spell);
-            }
+            const spell = await apiService.getSpell(spellId);
+            spellsData.push(spell);
           } catch (error) {
             console.error(`Error fetching spell ${spellId}:`, error);
           }
