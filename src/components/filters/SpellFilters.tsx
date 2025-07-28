@@ -1,5 +1,6 @@
 import React from 'react';
-import type { ClassType, FilterState, SpellClass } from '../../types/spell';
+import type { FilterState, ClassType } from '../../types/spell';
+import { useSpellClasses } from '../../hooks/useSpellClasses';
 import './SpellFilters.css';
 
 interface SpellFiltersProps {
@@ -12,39 +13,6 @@ interface SpellFiltersProps {
   filteredCount: number;
 }
 
-const classNames: Record<ClassType, SpellClass> = {
-  bard: {
-    id: 'bard',
-    name: 'Bardo',
-    image: '/src/assets/classes/bard.png'
-  },
-  cleric: {
-    id: 'cleric',
-    name: 'Clérigo',
-    image: '/src/assets/classes/cleric.png'
-  },
-  druid: {
-    id: 'druid',
-    name: 'Druida',
-    image: '/src/assets/classes/druid.png'
-  },
-  sorcerer: {
-    id: 'sorcerer',
-    name: 'Hechicero',
-    image: '/src/assets/classes/sorcerer.png'
-  },
-  warlock: {
-    id: 'warlock',
-    name: 'Brujo',
-    image: '/src/assets/classes/warlock.png'
-  },
-  wizard: {
-    id: 'wizard',
-    name: 'Mago',
-    image: '/src/assets/classes/wizard.png'
-  }
-};
-
 export const SpellFilters: React.FC<SpellFiltersProps> = ({
   filters,
   onUpdateFilter,
@@ -53,6 +21,28 @@ export const SpellFilters: React.FC<SpellFiltersProps> = ({
   totalSpells,
   filteredCount
 }) => {
+  const { classNames, isLoading, error } = useSpellClasses();
+
+  if (isLoading) {
+    return (
+      <div className="spell-filters">
+        <div className="filters-header">
+          <h2>Cargando filtros...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="spell-filters">
+        <div className="filters-header">
+          <h2>Error al cargar filtros</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="spell-filters">
       <div className="filters-header">
