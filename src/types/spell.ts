@@ -23,6 +23,12 @@ export interface SpellsByClass {
 
 export type ClassType = 'bard' | 'cleric' | 'druid' | 'sorcerer' | 'warlock' | 'wizard';
 
+export interface SpellClass {
+  id: string;
+  name: string;
+  image: string;
+}
+
 export type SortOption = 'name' | 'level' | 'damage';
 
 export interface FilterState {
