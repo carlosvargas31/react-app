@@ -21,7 +21,13 @@ export interface SpellsByClass {
   [className: string]: string[];
 }
 
-export type ClassType = 'bard' | 'cleric' | 'druid' | 'sorcerer' | 'warlock' | 'wizard';
+export type ClassType = string;
+
+export interface SpellClass {
+  id: string;
+  name: string;
+  image: string;
+}
 
 export type SortOption = 'name' | 'level' | 'damage';
 

@@ -1,25 +1,16 @@
 import React from 'react';
-import type { ClassType, FilterState } from '../../types/spell';
+import type { FilterState, ClassType } from '../../types/spell';
+import { useSpellClasses } from '../../hooks/useSpellClasses';
 import './SpellFilters.css';
 
 interface SpellFiltersProps {
   filters: FilterState;
   onUpdateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void;
   onResetFilters: () => void;
-  damageTypes: string[];
   levels: number[];
   totalSpells: number;
   filteredCount: number;
 }
-
-const classNames: Record<ClassType, string> = {
-  bard: 'Bardo',
-  cleric: 'Clérigo',
-  druid: 'Druida',
-  sorcerer: 'Hechicero',
-  warlock: 'Brujo',
-  wizard: 'Mago'
-};
 
 export const SpellFilters: React.FC<SpellFiltersProps> = ({
   filters,
@@ -29,6 +20,28 @@ export const SpellFilters: React.FC<SpellFiltersProps> = ({
   totalSpells,
   filteredCount
 }) => {
+  const { classNames, isLoading, error } = useSpellClasses();
+
+  if (isLoading) {
+    return (
+      <div className="spell-filters">
+        <div className="filters-header">
+          <h2>Cargando filtros...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="spell-filters">
+        <div className="filters-header">
+          <h2>Error al cargar filtros</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="spell-filters">
       <div className="filters-header">
@@ -55,19 +68,28 @@ export const SpellFilters: React.FC<SpellFiltersProps> = ({
         {/* Class Filter */}
         <div className="filter-group">
           <label htmlFor="class">Clase:</label>
-          <select
-            id="class"
-            value={filters.selectedClass}
-            onChange={(e) => onUpdateFilter('selectedClass', e.target.value as ClassType | 'all')}
-            className="filter-select"
-          >
-            <option value="all">Todas las clases</option>
-            {Object.entries(classNames).map(([key, name]) => (
-              <option key={key} value={key}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <div className="class-filter-container">
+            {filters.selectedClass !== 'all' && (
+              <img
+                src={classNames[filters.selectedClass].image}
+                alt={classNames[filters.selectedClass].name}
+                className="class-icon"
+              />
+            )}
+            <select
+              id="class"
+              value={filters.selectedClass}
+              onChange={(e) => onUpdateFilter('selectedClass', e.target.value as ClassType | 'all')}
+              className="filter-select"
+            >
+              <option value="all">Todas las clases</option>
+              {Object.entries(classNames).map(([key, classData]) => (
+                <option key={key} value={key}>
+                  {classData.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Level Filter */}

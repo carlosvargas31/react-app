@@ -7,16 +7,6 @@ interface SpellCardProps {
 }
 
 export const SpellCard: React.FC<SpellCardProps> = ({ spell }) => {
-  const getSpellImage = (spellId: string) => {
-    try {
-      // En Vite, las imágenes en src/assets necesitan ser importadas o usar la URL completa
-      return new URL(`../../assets/spells/${spellId}.png`, import.meta.url).href;
-    } catch {
-      // fallback image
-      return new URL('../../assets/spells/magic-missile.png', import.meta.url).href;
-    }
-  };
-
   const getLevelText = (level: number) => {
     return level === 0 ? 'Truco' : `Nivel ${level}`;
   };
@@ -25,7 +15,7 @@ export const SpellCard: React.FC<SpellCardProps> = ({ spell }) => {
     <div className="spell-card">
       <div className="spell-image-container">
         <img 
-          src={getSpellImage(spell.id)} 
+          src={spell.icon} 
           alt={spell.name}
           className="spell-image"
           loading="lazy"
